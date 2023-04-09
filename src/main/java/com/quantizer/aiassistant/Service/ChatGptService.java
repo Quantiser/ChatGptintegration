@@ -7,12 +7,13 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ChatGptService {
 
-    private static final String GPT_API_BASE_URL = "https://api.openai.com/v1/engines/text-davinci-002/completions";
-    private static final String API_KEY = "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";
+    private static final String GPT_API_BASE_URL = "https://api.openai.com/v1/chat/completions";
+    private static final String API_KEY = "OPEN API key";
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
 
@@ -37,7 +38,8 @@ public class ChatGptService {
                 JSONObject jsonResponse = new JSONObject(responseBody);
                 JSONArray choices = jsonResponse.getJSONArray("choices");
                 JSONObject firstChoice = choices.getJSONObject(0);
-                return firstChoice.getString("text");
+                JSONObject message = firstChoice.getJSONObject("message");
+                return message.getString("content");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -49,7 +51,11 @@ public class ChatGptService {
     
 
     private OkHttpClient createHttpClient() {
-        return new OkHttpClient();
+        return new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS) // Adjust the timeout duration as needed
+                .readTimeout(30, TimeUnit.SECONDS) // Adjust the timeout duration as needed
+                .writeTimeout(30, TimeUnit.SECONDS) // Adjust the timeout duration as needed
+                .build();
     }
 
     private Request buildGptRequest(String query, String context) {
@@ -60,10 +66,15 @@ public class ChatGptService {
         }
     
         JSONObject requestBody = new JSONObject();
-        requestBody.put("prompt", prompt);
-        requestBody.put("max_tokens", 1500);
-        requestBody.put("n", 1);
-        requestBody.put("temperature", 0.5); 
+        requestBody.put("model", "gpt-3.5-turbo");
+
+        JSONArray messages = new JSONArray();
+        JSONObject message = new JSONObject();
+        message.put("role", "user");
+        message.put("content", prompt);
+        messages.put(message);
+
+        requestBody.put("messages", messages);
     
         RequestBody body = RequestBody.create(JSON, requestBody.toString());
         System.out.println("Request body: " + requestBody.toString());
