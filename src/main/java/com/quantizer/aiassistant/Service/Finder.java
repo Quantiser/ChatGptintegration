@@ -11,13 +11,14 @@ public class Finder {
     public String find(String query, String context) {
 
         String isrequired=chatGptService.generateResponse(query, context, true);  
-
-        if(isrequired.equals("yes")){
+        if(isrequired.contains("true")||isrequired.contains("True")||isrequired.contains("TRUE")){
+            
             return chatGptService.generateResponse(query, context, false);
         }
         else{
-            return "No data found";
+            return chatGptService.generateResponse(query, context, false);
         }
+        
 }
 
 }

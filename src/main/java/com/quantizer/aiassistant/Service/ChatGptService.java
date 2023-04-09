@@ -12,7 +12,7 @@ import java.io.IOException;
 public class ChatGptService {
 
     private static final String GPT_API_BASE_URL = "https://api.openai.com/v1/engines/text-davinci-002/completions";
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "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";
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
 
@@ -60,9 +60,10 @@ public class ChatGptService {
         }
     
         JSONObject requestBody = new JSONObject();
-        requestBody.put("prompt", query);
-        requestBody.put("max_tokens", 500);
+        requestBody.put("prompt", prompt);
+        requestBody.put("max_tokens", 1500);
         requestBody.put("n", 1);
+        requestBody.put("temperature", 0.5); 
     
         RequestBody body = RequestBody.create(JSON, requestBody.toString());
         System.out.println("Request body: " + requestBody.toString());
