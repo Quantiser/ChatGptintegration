@@ -11,6 +11,7 @@ import java.io.IOException;
 public class DataRetrievalService {
 
     public String fetchData(QueryParser.Result parseResult) {
+        
         if (parseResult.requiresInternetData()) {
             return parseResult.getSourceType().equals("github") ? accessGitHubApi(parseResult) : scrapeWebsite(parseResult);
         }
